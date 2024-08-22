@@ -1,5 +1,6 @@
 package org.forthify.passxplat
 
+import InfoScreen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -34,7 +35,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import org.forthify.passxplat.screens.InfoScreen
 import org.forthify.passxplat.ui.NavShape
 import org.jetbrains.compose.ui.tooling.preview.Preview
 

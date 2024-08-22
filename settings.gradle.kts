@@ -2,6 +2,8 @@ rootProject.name = "PassXplat"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
+    plugins {
+    }
     repositories {
         google {
             mavenContent {
@@ -13,6 +15,7 @@ pluginManagement {
         mavenCentral()
         gradlePluginPortal()
     }
+
 }
 
 dependencyResolutionManagement {
