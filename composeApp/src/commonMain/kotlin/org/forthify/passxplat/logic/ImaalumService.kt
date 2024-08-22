@@ -12,14 +12,16 @@ interface FileSave{
 
 }
 
-class ImaalumService(private val client : HttpClient,val fileSave: FileSave)  {
+class ImaalumService(private val client : HttpClient,val fileSave: FileSave, private val loginService: LoginService)  {
+
 
 
     // Method to download the course confirmation slip
     suspend fun downloadCourseConfirmationSlip(sessionVal: String, semesterVal: String) {
 
+            var imaalumClient = loginService.LoginToImaalum(client)
             val url = "https://imaluum.iium.edu.my/confirmationslip?ses=$sessionVal&sem=$semesterVal"
-            val response: HttpResponse = client.get(url)
+            val response: HttpResponse = imaalumClient.get(url)
 
             if (response.status.value == 200) {
                 val bodyBytes = response.readBytes()
@@ -33,25 +35,26 @@ class ImaalumService(private val client : HttpClient,val fileSave: FileSave)  {
 
     // Method to download the exam slip
     suspend fun downloadExamSlip() {
-        CoroutineScope(Dispatchers.IO).launch {
-            val url = "https://imaluum.iium.edu.my/examslip" // Example URL, adjust accordingly
-            val response: HttpResponse = client.get(url)
+            var imaalumClient = loginService.LoginToImaalum(client)
+
+            val url = "https://imaluum.iium.edu.my/MyAcademic/course_timetable" // Example URL, adjust accordingly
+            val response: HttpResponse = imaalumClient.get(url)
 
             if (response.status.value == 200) {
                 val bodyBytes = response.readBytes()
-                fileSave.SaveToFile("ExamSlip.html", bodyBytes)
+                fileSave.SaveToFile("ExamSlip.pdf", bodyBytes)
                 println("Exam Slip download complete")
             } else {
                 println("Failed to download Exam Slip: ${response.status.value}")
             }
         }
-    }
 
     // Method to download the result
     suspend fun downloadResult(sessionVal: String, semesterVal: String) {
-        CoroutineScope(Dispatchers.IO).launch {
-            val url = "https://imaluum.iium.edu.my/result?ses=$sessionVal&sem=$semesterVal"
-            val response: HttpResponse = client.get(url)
+        var imaalumClient = loginService.LoginToImaalum(client)
+
+        val url = "https://imaluum.iium.edu.my/MyAcademic/resultprint?ses=$sessionVal&sem=$semesterVal"
+            val response: HttpResponse = imaalumClient.get(url)
 
             if (response.status.value == 200) {
                 val bodyBytes = response.readBytes()
@@ -61,6 +64,18 @@ class ImaalumService(private val client : HttpClient,val fileSave: FileSave)  {
                 println("Failed to download Result: ${response.status.value}")
             }
         }
+    suspend fun downloadFinancialStatement(){
+        var imaalumClient = loginService.LoginToImaalum(client)
+        val url = "https://imaluum.iium.edu.my/MyFinancial"
+        val response: HttpResponse = imaalumClient.get(url)
+
+        if (response.status.value == 200) {
+            val bodyBytes = response.readBytes()
+            fileSave.SaveToFile("Financial.pdf", bodyBytes)
+            println("Result download complete")
+        } else {
+            println("Failed to download Result: ${response.status.value}")
+        }
+    }
     }
 
-}

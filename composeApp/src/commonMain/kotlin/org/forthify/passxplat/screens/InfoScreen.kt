@@ -19,6 +19,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.runtime.Composable
@@ -30,13 +31,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.forthify.passxplat.logic.ImaalumService
-import org.koin.java.KoinJavaComponent.inject
-import org.koin.core.component.inject
-import org.koin.core.context.GlobalContext.get
 import org.koin.java.KoinJavaComponent.getKoin
 
 data class ImaalumInfo(
@@ -45,23 +41,21 @@ data class ImaalumInfo(
     val action: suspend () -> Unit  // Changed to suspend function
 )
 
-fun CardData(imaalumService: ImaalumService): List<ImaalumInfo> {
+fun CardData(imaalumService: ImaalumService, sessionVal: String, semesterVal: String): List<ImaalumInfo> {
     val data = listOf(
         ImaalumInfo("Course Confirmation Slip", "Get your timetable") {
-            imaalumService.downloadCourseConfirmationSlip("2021/2022","1")
+            imaalumService.downloadCourseConfirmationSlip(sessionVal,semesterVal)
         },
         ImaalumInfo("Financial Statements", "View your financial details") {
-            // Implement your suspend function here
+            imaalumService.downloadFinancialStatement()
         },
         ImaalumInfo("Exam Slip", "Download your exam slip") {
-            println("Async operation started")
-            delay(2000)  // Simulating some work
-            println("Async operation completed")
+            imaalumService.downloadExamSlip()
+
         },
         ImaalumInfo("Results", "Check your results") {
-            println("Async operation started")
-            delay(20000)  // Simulating longer operation
-            println("Async operation completed")
+            imaalumService.downloadResult(sessionVal,semesterVal)
+
         }
     )
     return data
@@ -70,22 +64,44 @@ fun CardData(imaalumService: ImaalumService): List<ImaalumInfo> {
 @Composable
 fun InfoScreen() {
     val imaalumService : ImaalumService = getKoin().get()
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
+    var sessionVal : String by remember { mutableStateOf("") }
+    var semesterVal : String by remember { mutableStateOf("1") }
+    var expanded by remember { mutableStateOf(false) }
+
+    Column (
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        contentPadding = PaddingValues(8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        items(CardData(imaalumService)) { info ->
-            InfoCard(
-                title = info.heading,
-                body = info.body,
-                backgroundColor = Color(0xFFBB86FC),
-                onClick = info.action  // Passing the suspend function
-            )
+    ){
+        TextField(
+            value = sessionVal,
+            onValueChange = { sessionVal = it },
+            label = { Text("Session e.g 2021/2022") },
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 6.5.dp)
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+
+        TextField(
+            value = semesterVal,
+            onValueChange = { semesterVal = it },
+            label = { Text("Semester e.g 1 or 2 or 3") },
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 6.5.dp)
+        )
+
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            contentPadding = PaddingValues(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(CardData(imaalumService,sessionVal,semesterVal)) { info ->
+                InfoCard(
+                    title = info.heading,
+                    body = info.body,
+                    backgroundColor = Color(0xFFBB86FC),
+                    onClick = info.action  // Passing the suspend function
+                )
+            }
         }
     }
 }

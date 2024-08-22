@@ -39,6 +39,7 @@ kotlin {
             implementation(libs.androidx.activity.compose)
         }
         commonMain.dependencies {
+            implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.1")
 
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.okhttp)
@@ -59,6 +60,7 @@ kotlin {
 
         }
         desktopMain.dependencies {
+            implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.1")
             implementation(libs.koin.core)
             implementation(libs.ktor.client.okhttp)
             implementation(compose.desktop.currentOs)
@@ -95,8 +97,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     buildFeatures {
         compose = true

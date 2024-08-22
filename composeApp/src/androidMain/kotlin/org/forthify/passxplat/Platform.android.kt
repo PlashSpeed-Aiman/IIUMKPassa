@@ -1,6 +1,8 @@
 package org.forthify.passxplat
 
 import android.os.Build
+import org.forthify.passxplat.logic.AndroidFileSave
+import org.forthify.passxplat.logic.FileSave
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
 import org.koin.dsl.module
@@ -12,5 +14,9 @@ class AndroidPlatform : Platform {
 actual fun getPlatform(): Platform = AndroidPlatform()
 
 actual fun platformModule(): Module {
-    TODO("Not yet implemented")
+    return module {
+        single<FileSave> {
+            AndroidFileSave()
+        }
+    }
 }
