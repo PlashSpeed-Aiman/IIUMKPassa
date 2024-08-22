@@ -33,6 +33,11 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.forthify.passxplat.logic.ImaalumService
+import org.koin.java.KoinJavaComponent.inject
+import org.koin.core.component.inject
+import org.koin.core.context.GlobalContext.get
+import org.koin.java.KoinJavaComponent.getKoin
 
 data class ImaalumInfo(
     val heading: String,
@@ -40,10 +45,10 @@ data class ImaalumInfo(
     val action: suspend () -> Unit  // Changed to suspend function
 )
 
-fun CardData(): List<ImaalumInfo> {
+fun CardData(imaalumService: ImaalumService): List<ImaalumInfo> {
     val data = listOf(
         ImaalumInfo("Course Confirmation Slip", "Get your timetable") {
-            // Implement your suspend function here
+            imaalumService.downloadCourseConfirmationSlip("2021/2022","1")
         },
         ImaalumInfo("Financial Statements", "View your financial details") {
             // Implement your suspend function here
@@ -64,6 +69,7 @@ fun CardData(): List<ImaalumInfo> {
 
 @Composable
 fun InfoScreen() {
+    val imaalumService : ImaalumService = getKoin().get()
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         modifier = Modifier
@@ -73,7 +79,7 @@ fun InfoScreen() {
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        items(CardData()) { info ->
+        items(CardData(imaalumService)) { info ->
             InfoCard(
                 title = info.heading,
                 body = info.body,

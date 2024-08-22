@@ -10,6 +10,7 @@ class AndroidPlatform : Platform {
 }
 
 actual fun getPlatform(): Platform = AndroidPlatform()
-actual fun platformModule ():Module{ return module {
-    single { DatabaseDriverFactory(androidContext()) }
-}}
+
+actual fun platformModule(): Module {
+    TODO("Not yet implemented")
+}

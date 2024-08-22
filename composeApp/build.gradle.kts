@@ -41,6 +41,7 @@ kotlin {
         commonMain.dependencies {
 
             implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.okhttp)
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.ktor.client.core)
             implementation(project.dependencies.platform(libs.koin.bom))
@@ -58,6 +59,8 @@ kotlin {
 
         }
         desktopMain.dependencies {
+            implementation(libs.koin.core)
+            implementation(libs.ktor.client.okhttp)
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
         }
