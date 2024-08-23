@@ -20,6 +20,8 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
+import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material.TextFieldDefaults.BackgroundOpacity
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.runtime.Composable
@@ -77,7 +79,15 @@ fun InfoScreen() {
             value = sessionVal,
             onValueChange = { sessionVal = it },
             label = { Text("Session e.g 2021/2022") },
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 6.5.dp)
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 6.5.dp),
+            shape = TextFieldDefaults.TextFieldShape,
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                placeholderColor = Color(0xFF00928F),
+                focusedLabelColor = Color(0xFF00928F),
+                cursorColor =  Color(0xFF00928F),
+                focusedBorderColor = Color(0xFF00928F),
+                backgroundColor =  MaterialTheme. colors. onSurface. copy(alpha = BackgroundOpacity)
+            )
         )
         Spacer(modifier = Modifier.height(12.dp))
 
@@ -85,7 +95,15 @@ fun InfoScreen() {
             value = semesterVal,
             onValueChange = { semesterVal = it },
             label = { Text("Semester e.g 1 or 2 or 3") },
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 6.5.dp)
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 6.5.dp),
+                    shape = TextFieldDefaults.TextFieldShape,
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                placeholderColor = Color(0xFF00928F),
+                focusedLabelColor = Color(0xFF00928F),
+                cursorColor =  Color(0xFF00928F),
+                focusedBorderColor = Color(0xFF00928F),
+                backgroundColor =  MaterialTheme. colors. onSurface. copy(alpha = BackgroundOpacity)
+            )
         )
 
         LazyVerticalGrid(
@@ -98,7 +116,7 @@ fun InfoScreen() {
                 InfoCard(
                     title = info.heading,
                     body = info.body,
-                    backgroundColor = Color(0xFFBB86FC),
+                    backgroundColor =  Color(0xFFD59F0F),
                     onClick = info.action  // Passing the suspend function
                 )
             }
@@ -119,7 +137,7 @@ fun InfoCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(170.dp),
+            .height(200.dp),
         elevation = 4.dp
     ) {
         Column(
@@ -130,7 +148,7 @@ fun InfoCard(
             // Top section remains the same
             Box(
                 modifier = Modifier
-                    .weight(1f)
+                    .weight(0.1f)
                     .fillMaxWidth()
                     .background(backgroundColor)
             )

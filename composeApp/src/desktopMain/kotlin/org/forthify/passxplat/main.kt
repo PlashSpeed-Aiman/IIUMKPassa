@@ -11,7 +11,7 @@ fun main() = application {
     Window(
         onCloseRequest = ::exitApplication,
         title = "IIUMKPassa",
-        state = rememberWindowState(width = 400.dp, height = 800.dp),
+        state = rememberWindowState(width = 1000.dp, height = 800.dp),
         ) {
         startKoin {
             modules(commonModule, platformModule())

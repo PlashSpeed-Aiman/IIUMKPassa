@@ -1,6 +1,7 @@
 package org.forthify.passxplat.screens
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.ButtonElevation
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
@@ -77,27 +79,30 @@ fun LoginForm(loginService: LoginService, credStore: CredentialStorage) {
                 .padding(16.dp)
         ) {
             // Clickable "Login" text to show/hide the login form
-            Text(
-                text = "Setup Credentials",
-                style = MaterialTheme.typography.h6,
-                color = MaterialTheme.colors.primary,
+            Button(
+                onClick = {
+                    isLoginVisible = !isLoginVisible
+                    isClicked = !isClicked
+                },
+                elevation = ButtonDefaults.elevation(
+                    defaultElevation = 1.dp
+                ),
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = Color.White,
+                    contentColor = Color(0xFFD59F0F)
+                ),
+                shape = MaterialTheme.shapes.medium,
                 modifier = Modifier
                     .padding(bottom = 16.dp)
-                    .clickable {
-                        isLoginVisible = !isLoginVisible
-                        isClicked = !isClicked
-                    }
-                    .background(
-                        color = if (isClicked) Color.LightGray else Color.Transparent, // Change background color when clicked
-                        shape = MaterialTheme.shapes.medium
-                    )
-                    .border(
-                        width = 1.dp,
-                        color = Color.Gray, // Border color
-                        shape = MaterialTheme.shapes.medium // Same shape for border
-                    )
-                    .padding(16.dp) // Larger padding for clickable area
-            )
+                    .fillMaxWidth()
+            ) {
+                Text(
+                    text = "Setup Credentials",
+                    style = MaterialTheme.typography.h6,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(8.dp)
+                )
+            }
 
 
             // Collapsible login form
@@ -146,9 +151,15 @@ fun LoginForm(loginService: LoginService, credStore: CredentialStorage) {
                                     isLoading = false
                                 }
                             },
-                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.buttonColors(
+                                backgroundColor = Color(0xFF00928F),
+                                contentColor = Color(0xFFFFFFFF)
+                            ),
+                            modifier = Modifier.fillMaxWidth().background(
+                                color = Color(0xFF00928F)
+                            ),
                             contentPadding = PaddingValues(15.dp),
-                            shape = RoundedCornerShape(2.dp),
+                            shape = MaterialTheme.shapes.medium,
                             enabled = !isLoading // Disable button while loading
                         ) {
                             if (isLoading) {
@@ -174,18 +185,16 @@ fun LoginForm(loginService: LoginService, credStore: CredentialStorage) {
                 modifier = Modifier
                     .fillMaxWidth(),
                 contentPadding = PaddingValues(15.dp),
-                shape = RoundedCornerShape(2.dp),// Add padding to give the button some space around the text
+                shape = MaterialTheme.shapes.medium ,// Add padding to give the button some space around the text
                 colors = ButtonDefaults.buttonColors(
+                    backgroundColor = Color(0xFF00928F),
                     contentColor = Color.White // Text color
                 )
             ) {
                 Text(
                     text = "Click To Login To Wifi",
                     textAlign = TextAlign.Center, // Center align text
-                    style = TextStyle(
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold // Make text bold
-                    ) // Adjust font size as needed
+                    style = MaterialTheme.typography.h6// Adjust font size as needed
                 )
             }
 

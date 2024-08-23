@@ -2,6 +2,7 @@ package org.forthify.passxplat
 
 import InfoScreen
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,6 +16,7 @@ import androidx.compose.material.DrawerState
 import androidx.compose.material.DrawerValue
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalDrawer
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
@@ -61,6 +63,9 @@ fun MainScreen() {
         Scaffold(
             topBar = {
                 TopAppBar(
+                    contentColor = Color.White
+                    ,
+                    backgroundColor = Color(0xFF00928F),
                     modifier = Modifier.height(70.dp),
                     elevation = 0.dp,
                     title = { Text("IIUMKPassa") },
@@ -91,10 +96,17 @@ fun MainScreen() {
 @Preview
 @Composable
 fun DrawerContent(navController: NavHostController, drawerState: DrawerState, scope: CoroutineScope) {
-    Column (modifier = Modifier.padding(5.dp)) {
+    Column (
+        modifier = Modifier.background(shape = RoundedCornerShape(10.dp), color = Color.White)
+    ){
         Box(
-            modifier = Modifier.padding(5.dp).background(
-                color = Color(0xFFBB86FC),
+            modifier = Modifier.height(100.dp).fillMaxWidth().background(
+                color = Color(0xFF00928F)
+            )
+        )
+        Box(
+            modifier = Modifier.padding(5.dp).
+            border(1.dp,Color(0xFF00928F),
                 shape = RoundedCornerShape(5.dp)
             ).fillMaxWidth().clickable {
                 navController.navigate("home")
@@ -102,8 +114,9 @@ fun DrawerContent(navController: NavHostController, drawerState: DrawerState, sc
             }
         ) {
             Text(
-                fontSize = 18.sp,
-                color = Color.White,
+                style = MaterialTheme.typography.subtitle1// Adjust font size as needed
+,
+                        color = Color(0xFFD59F0F),
 
                 text = "Home",
                 modifier = Modifier
@@ -112,17 +125,19 @@ fun DrawerContent(navController: NavHostController, drawerState: DrawerState, sc
             )
         }
         Box(
-            modifier = Modifier.padding(5.dp).background(
-                color = Color(0xFFBB86FC),
+            modifier = Modifier.padding(5.dp).
+            border(1.dp,Color(0xFF00928F),
                 shape = RoundedCornerShape(5.dp)
-            ).fillMaxWidth().clickable {
+            )
+                .fillMaxWidth().clickable {
                 navController.navigate("home")
                 scope.launch { drawerState.close() }
             }
         ) {
             Text(
-                fontSize = 18.sp,
-                color = Color.White,
+                style = MaterialTheme.typography.subtitle1// Adjust font size as needed
+,
+                        color = Color(0xFFD59F0F),
                 text = "Profile",
                 modifier = Modifier
                     .fillMaxWidth()
@@ -135,8 +150,7 @@ fun DrawerContent(navController: NavHostController, drawerState: DrawerState, sc
             )
         }
         Box(
-            modifier = Modifier.padding(5.dp).background(
-                color = Color(0xFFBB86FC),
+            modifier = Modifier.padding(5.dp). border(1.dp,Color(0xFF00928F),
                 shape = RoundedCornerShape(5.dp)
             ).fillMaxWidth().clickable {
                 navController.navigate("home")
@@ -144,8 +158,9 @@ fun DrawerContent(navController: NavHostController, drawerState: DrawerState, sc
             }
         ) {
             Text(
-                fontSize = 18.sp,
-                color = Color.White,
+                style = MaterialTheme.typography.subtitle1// Adjust font size as needed
+                ,
+                color = Color(0xFFD59F0F),
                 text = "Settings",
                 modifier = Modifier
                     .fillMaxWidth()
