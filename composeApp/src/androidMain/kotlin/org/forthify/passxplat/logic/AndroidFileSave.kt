@@ -43,12 +43,12 @@ class AndroidFileSave(
     }
 
     private fun checkAndRequestPermission(onGranted: () -> Unit, onDenied: () -> Unit) {
-        val permission = Manifest.permission.WRITE_EXTERNAL_STORAGE
+        val permissions = arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE)
 
         if (ContextCompat.checkSelfPermission(context,Manifest.permission.WRITE_EXTERNAL_STORAGE ) == PackageManager.PERMISSION_GRANTED) {
             onGranted()
         } else {
-            ActivityCompat.requestPermissions( context as MainActivity, arrayOf(permission), 1001)
+            ActivityCompat.requestPermissions( context as MainActivity, permissions, 1001)
 
         }
     }

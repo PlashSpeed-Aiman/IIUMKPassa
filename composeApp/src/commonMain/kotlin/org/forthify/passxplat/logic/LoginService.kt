@@ -47,10 +47,15 @@ class LoginService(private val httpClient: HttpClient,private val credentialStor
     suspend fun LoginToWifi(){
         val creds = credentialStorage.load()
         val form = createForm(creds)
-        httpClient.post(ADDRESS) {
-            contentType(ContentType.Application.FormUrlEncoded)
-            setBody(form.formUrlEncode())
+        try {
+            httpClient.post(ADDRESS) {
+                contentType(ContentType.Application.FormUrlEncoded)
+                setBody(form.formUrlEncode())
+            }
+        }catch (e:Exception){
+            e.printStackTrace()
         }
+
     }
 
     suspend fun LoginToImaalum(httpClient: HttpClient): HttpClient {
