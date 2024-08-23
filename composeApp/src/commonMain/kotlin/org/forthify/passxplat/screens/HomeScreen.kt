@@ -38,6 +38,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import okhttp3.internal.wait
 import org.forthify.passxplat.logic.CredentialStorage
 import org.forthify.passxplat.logic.LoginService
 import org.forthify.passxplat.model.StudentCredentials
@@ -64,9 +65,8 @@ fun LoginForm(loginService: LoginService, credStore: CredentialStorage,snackbarH
     var isClicked by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
 
-    Box (modifier = Modifier.fillMaxSize()){
         Column(
-            verticalArrangement = Arrangement.Top,
+            verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.Start,
             modifier = Modifier
                 .fillMaxWidth()
@@ -178,7 +178,7 @@ fun LoginForm(loginService: LoginService, credStore: CredentialStorage,snackbarH
             }
 
             Button(
-                onClick = {CoroutineScope(Dispatchers.IO).launch {
+                onClick = {  CoroutineScope(Dispatchers.IO).launch {
                     delay(500)
                     loginService.LoginToWifi()
                     isLoading = false
@@ -188,6 +188,7 @@ fun LoginForm(loginService: LoginService, credStore: CredentialStorage,snackbarH
                             message = "Connection Successful! But do check by searching something on the Internet"
                         )
                     }
+
 
                           },
                 modifier = Modifier
@@ -208,7 +209,7 @@ fun LoginForm(loginService: LoginService, credStore: CredentialStorage,snackbarH
 
 
         }
-    }
+
 }
 
 @Composable

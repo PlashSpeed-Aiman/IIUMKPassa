@@ -185,10 +185,18 @@ fun InfoCard(
                 }
                 IconButton(
                     onClick = {
-                        coroutineScope.launch {
+                        var job = coroutineScope.launch {
                             isLoading = true
                             try {
                                 onClick()
+
+
+                            } finally {
+                                isLoading = false
+                            }
+                        }
+                        job.invokeOnCompletion {
+                            coroutineScope.launch {
                                 var res = snackbar.showSnackbar("Download Done","VIEW")
                                 when(res){
                                     SnackbarResult.ActionPerformed -> {
@@ -198,12 +206,10 @@ fun InfoCard(
                                         /* Handle snackbar dismissed */
                                     }
                                 }
-
-                            } finally {
-                                isLoading = false
                             }
                         }
-                    },
+                        }
+                        ,
                     enabled = !isLoading
                 ) {
                     if (isLoading) {
