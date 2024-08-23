@@ -18,6 +18,8 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.SnackbarHostState
+import androidx.compose.material.SnackbarResult
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
@@ -64,7 +66,7 @@ fun CardData(imaalumService: ImaalumService, sessionVal: String, semesterVal: St
 }
 
 @Composable
-fun InfoScreen() {
+fun InfoScreen(snackbarHostState: SnackbarHostState) {
     val imaalumService : ImaalumService = getKoin().get()
     var sessionVal : String by remember { mutableStateOf("") }
     var semesterVal : String by remember { mutableStateOf("1") }
@@ -117,7 +119,9 @@ fun InfoScreen() {
                     title = info.heading,
                     body = info.body,
                     backgroundColor =  Color(0xFFD59F0F),
-                    onClick = info.action  // Passing the suspend function
+                    onClick = info.action,
+                    snackbar = snackbarHostState
+                      // Passing the suspend function
                 )
             }
         }
@@ -129,6 +133,7 @@ fun InfoCard(
     title: String,
     body: String,
     backgroundColor: Color,
+    snackbar: SnackbarHostState,
     onClick: suspend () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -184,6 +189,16 @@ fun InfoCard(
                             isLoading = true
                             try {
                                 onClick()
+                                var res = snackbar.showSnackbar("Download Done","VIEW")
+                                when(res){
+                                    SnackbarResult.ActionPerformed -> {
+                                        /* Handle snackbar action performed */
+                                    }
+                                    SnackbarResult.Dismissed -> {
+                                        /* Handle snackbar dismissed */
+                                    }
+                                }
+
                             } finally {
                                 isLoading = false
                             }

@@ -37,6 +37,8 @@ kotlin {
             implementation(libs.kotlinx.coroutines.android)
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+            implementation ("com.google.accompanist:accompanist-permissions:0.35.2-beta")
+
         }
         commonMain.dependencies {
             implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.1")

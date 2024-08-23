@@ -1,10 +1,7 @@
 package org.forthify.passxplat.screens
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,11 +15,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.ButtonElevation
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Snackbar
+import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
@@ -33,13 +30,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -50,19 +44,19 @@ import org.forthify.passxplat.model.StudentCredentials
 import org.koin.java.KoinJavaComponent.getKoin
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(snackbarHostState: SnackbarHostState) {
     val loginService : LoginService = getKoin().get()
     val credStore : CredentialStorage = getKoin().get()
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        LoginForm(loginService,credStore)
+        LoginForm(loginService,credStore,snackbarHostState)
     }
 }
 
 @Composable
-fun LoginForm(loginService: LoginService, credStore: CredentialStorage) {
+fun LoginForm(loginService: LoginService, credStore: CredentialStorage,snackbarHostState: SnackbarHostState) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var isPasswordVisible by remember { mutableStateOf(false) }
@@ -150,6 +144,13 @@ fun LoginForm(loginService: LoginService, credStore: CredentialStorage) {
                                     credStore.save(StudentCredentials(username, password))
                                     isLoading = false
                                 }
+                                CoroutineScope(Dispatchers.Main).launch{
+                                    snackbarHostState.showSnackbar(
+                                        message = "Credential has been setup!"
+
+                                    )
+
+                                }
                             },
                             colors = ButtonDefaults.buttonColors(
                                 backgroundColor = Color(0xFF00928F),
@@ -181,7 +182,14 @@ fun LoginForm(loginService: LoginService, credStore: CredentialStorage) {
                     delay(500)
                     loginService.LoginToWifi()
                     isLoading = false
-                } },
+                }
+                    CoroutineScope(Dispatchers.Main).launch{
+                        snackbarHostState.showSnackbar(
+                            message = "Connection Successful! But do check by searching something on the Internet"
+                        )
+                    }
+
+                          },
                 modifier = Modifier
                     .fillMaxWidth(),
                 contentPadding = PaddingValues(15.dp),

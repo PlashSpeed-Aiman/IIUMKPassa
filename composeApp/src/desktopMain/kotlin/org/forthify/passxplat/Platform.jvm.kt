@@ -3,6 +3,7 @@ import org.forthify.passxplat.logic.CredentialStorage
 import org.forthify.passxplat.logic.DesktopCredentialsImpl
 import org.forthify.passxplat.logic.DesktopFileSave
 import org.forthify.passxplat.logic.FileSave
+import org.forthify.passxplat.logic.ImaalumService
 import org.koin.core.module.Module
 import org.koin.dsl.module
 

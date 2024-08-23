@@ -7,30 +7,50 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
+import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import org.forthify.passxplat.KPassApplication
+import org.forthify.passxplat.MainActivity
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 
-class  AndroidFileSave(private val context: Context) : FileSave {
+class AndroidFileSave(
+    private val context: Context,
+) : FileSave {
+
+
     override fun SaveToFile(fileName: String, data: ByteArray) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             saveFileApi29AndAbove(fileName, data)
         } else {
-            if (checkPermission()) {
-                saveFileBelowApi29(fileName, data)
-            } else {
-                throw SecurityException("WRITE_EXTERNAL_STORAGE permission not granted")
-            }
+            checkAndRequestPermission(
+                onGranted = {
+                    saveFileBelowApi29(fileName, data)
+//                    onComplete(true)
+                },
+                onDenied = {
+//                    onComplete(false)
+                }
+            )
         }
     }
 
-    private fun checkPermission(): Boolean {
-        return ContextCompat.checkSelfPermission(
-            context,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-        ) == PackageManager.PERMISSION_GRANTED
+    override fun SaveToFile(fileName: String, data: ByteArray, onComplete: (Boolean) -> Unit) {
+        return
+    }
+
+    private fun checkAndRequestPermission(onGranted: () -> Unit, onDenied: () -> Unit) {
+        val permission = Manifest.permission.WRITE_EXTERNAL_STORAGE
+
+        if (ContextCompat.checkSelfPermission(context,Manifest.permission.WRITE_EXTERNAL_STORAGE ) == PackageManager.PERMISSION_GRANTED) {
+            onGranted()
+        } else {
+            ActivityCompat.requestPermissions( context as MainActivity, arrayOf(permission), 1001)
+
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
@@ -66,8 +86,10 @@ class  AndroidFileSave(private val context: Context) : FileSave {
             FileOutputStream(file).use { fos ->
                 fos.write(data)
             }
+            Log.println(Log.DEBUG,"DEBUG",downloadsDir.absolutePath + "/" + file.name)
         } catch (e: IOException) {
             e.printStackTrace()
+            throw e
         }
     }
 }

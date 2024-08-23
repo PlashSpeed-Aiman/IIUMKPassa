@@ -9,7 +9,7 @@ import java.io.File
 interface FileSave{
 
     fun SaveToFile(fileName: String, data: ByteArray)
-
+    fun SaveToFile(fileName: String, data: ByteArray, onComplete: (Boolean) -> Unit)
 }
 
 class ImaalumService(private val client : HttpClient,val fileSave: FileSave, private val loginService: LoginService)  {

@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Colors
 import androidx.compose.material.DrawerState
 import androidx.compose.material.DrawerValue
 import androidx.compose.material.Icon
@@ -19,6 +18,8 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalDrawer
 import androidx.compose.material.Scaffold
+import androidx.compose.material.SnackbarHost
+import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
@@ -28,9 +29,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -51,7 +50,7 @@ fun MainScreen() {
     val navController = rememberNavController()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-
+val snackbarHostState = remember { SnackbarHostState() }
     // Wrap the entire content with ModalNavigationDrawer to handle the drawer state.
     ModalDrawer(
         drawerShape = NavShape(0.dp, 1f),
@@ -61,6 +60,9 @@ fun MainScreen() {
         }
     ) {
         Scaffold(
+            snackbarHost = {
+                SnackbarHost(hostState = snackbarHostState)
+            },
             topBar = {
                 TopAppBar(
                     contentColor = Color.White
@@ -86,8 +88,8 @@ fun MainScreen() {
                 startDestination = "home",
                 modifier = Modifier.padding(paddingValues)
             ) {
-                composable("home") { org.forthify.passxplat.screens.HomeScreen() }
-                composable("profile") { InfoScreen() }
+                composable("home") { org.forthify.passxplat.screens.HomeScreen(snackbarHostState) }
+                composable("profile") { InfoScreen(snackbarHostState) }
                 composable("settings") { SettingsScreen() }
             }
         }

@@ -9,4 +9,8 @@ class DesktopFileSave : FileSave{
 
     }
 
+    override fun SaveToFile(fileName: String, data: ByteArray, onComplete: (Boolean) -> Unit) {
+        return
+    }
+
 }
