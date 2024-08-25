@@ -86,7 +86,9 @@ val snackbarHostState = remember { SnackbarHostState() }
             NavHost(
                 navController = navController,
                 startDestination = "home",
-                modifier = Modifier.padding(paddingValues)
+                modifier = Modifier.
+                padding(paddingValues),
+
             ) {
                 composable("home") { org.forthify.passxplat.screens.HomeScreen(snackbarHostState) }
                 composable("profile") { InfoScreen(snackbarHostState) }
@@ -173,26 +175,6 @@ fun DrawerContent(navController: NavHostController, drawerState: DrawerState, sc
                     .padding(12.dp)
             )
         }
-    }
-}
-@Preview
-@Composable
-fun HomeScreen() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text("Home Screen")
-    }
-}
-
-@Composable
-fun ProfileScreen() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text("Profile Screen")
     }
 }
 

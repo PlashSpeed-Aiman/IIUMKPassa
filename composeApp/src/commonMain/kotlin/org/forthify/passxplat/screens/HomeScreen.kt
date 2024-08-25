@@ -48,7 +48,6 @@ fun HomeScreen(snackbarHostState: SnackbarHostState) {
     val credStore: CredentialStorage = getKoin().get()
     Box(
         modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
     ) {
         Column(
             verticalArrangement = Arrangement.Center,
@@ -57,6 +56,10 @@ fun HomeScreen(snackbarHostState: SnackbarHostState) {
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
+            HomeScreenInfo()
+            Spacer(
+                modifier = Modifier.height(25.dp)
+            )
             LoginForm( credStore, snackbarHostState)
             LoginButton(loginService, snackbarHostState)
         }
@@ -180,7 +183,19 @@ fun LoginForm(
     }
 
 }
-
+@Composable
+fun HomeScreenInfo(){
+    Column {
+        Text(
+           style = MaterialTheme.typography.h5,
+            text = "Home",
+            )
+        Spacer(
+            modifier = Modifier.height(10.dp)
+        )
+        Text(text = "Easily login to campus wifi by setting up your credentials once, and press login")
+    }
+}
 @Composable
 fun LoginButton(loginService: LoginService, snackbarHostState: SnackbarHostState) {
     var isLoading by remember { mutableStateOf(false) }

@@ -1,3 +1,4 @@
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -77,40 +78,48 @@ fun InfoScreen(snackbarHostState: SnackbarHostState) {
             .fillMaxSize()
             .padding(16.dp),
     ){
-        TextField(
-            value = sessionVal,
-            onValueChange = { sessionVal = it },
-            label = { Text("Session e.g 2021/2022") },
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 6.5.dp),
-            shape = TextFieldDefaults.TextFieldShape,
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                placeholderColor = Color(0xFF00928F),
-                focusedLabelColor = Color(0xFF00928F),
-                cursorColor =  Color(0xFF00928F),
-                focusedBorderColor = Color(0xFF00928F),
-                backgroundColor =  MaterialTheme. colors. onSurface. copy(alpha = BackgroundOpacity)
-            )
+        InfoScreenInfo()
+        Spacer(
+            modifier = Modifier.height(15.dp)
         )
-        Spacer(modifier = Modifier.height(12.dp))
 
-        TextField(
-            value = semesterVal,
-            onValueChange = { semesterVal = it },
-            label = { Text("Semester e.g 1 or 2 or 3") },
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 6.5.dp),
+                TextField(
+                    value = sessionVal,
+                    onValueChange = { sessionVal = it },
+                    label = { Text("Session e.g 2021/2022") },
+                    modifier = Modifier.fillMaxWidth(),
                     shape = TextFieldDefaults.TextFieldShape,
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                placeholderColor = Color(0xFF00928F),
-                focusedLabelColor = Color(0xFF00928F),
-                cursorColor =  Color(0xFF00928F),
-                focusedBorderColor = Color(0xFF00928F),
-                backgroundColor =  MaterialTheme. colors. onSurface. copy(alpha = BackgroundOpacity)
-            )
-        )
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        placeholderColor = Color(0xFF00928F),
+                        focusedLabelColor = Color(0xFF00928F),
+                        cursorColor = Color(0xFF00928F),
+                        focusedBorderColor = Color(0xFF00928F),
+                        backgroundColor = MaterialTheme.colors.onSurface.copy(alpha = BackgroundOpacity)
+                    )
+                )
+                Spacer(modifier = Modifier.height(15.dp))
 
+                TextField(
+                    value = semesterVal,
+                    onValueChange = { semesterVal = it },
+                    label = { Text("Semester e.g 1 or 2 or 3") },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = TextFieldDefaults.TextFieldShape,
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        placeholderColor = Color(0xFF00928F),
+                        focusedLabelColor = Color(0xFF00928F),
+                        cursorColor = Color(0xFF00928F),
+                        focusedBorderColor = Color(0xFF00928F),
+                        backgroundColor = MaterialTheme.colors.onSurface.copy(alpha = BackgroundOpacity)
+                    )
+                )
+
+        Spacer(
+            modifier = Modifier.height(10.dp)
+        )
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
-            contentPadding = PaddingValues(8.dp),
+            contentPadding = PaddingValues(vertical = 8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
@@ -127,7 +136,21 @@ fun InfoScreen(snackbarHostState: SnackbarHostState) {
         }
     }
 }
+@Composable
+fun InfoScreenInfo(){
+    Column (
 
+    ){
+        Text(
+            style = MaterialTheme.typography.h5,
+            text = "Profile",
+        )
+        Spacer(
+            modifier = Modifier.height(10.dp)
+        )
+        Text(text = "Get all the important details like Exam results, course schedule and many more")
+    }
+}
 @Composable
 fun InfoCard(
     title: String,
@@ -140,10 +163,11 @@ fun InfoCard(
     var isLoading by remember { mutableStateOf(false) }
 
     Card(
+        shape = MaterialTheme.shapes.small,
         modifier = Modifier
             .fillMaxWidth()
             .height(200.dp),
-        elevation = 4.dp
+        elevation = 2.dp
     ) {
         Column(
             modifier = Modifier
