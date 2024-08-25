@@ -57,7 +57,7 @@ class LoginService(private val httpClient: HttpClient,private val credentialStor
         }
 
     }
-
+    // THIS GETS THE NECESSARY COOKIES TO ALLOW IMAALUM TO BE USED
     suspend fun LoginToImaalum(httpClient: HttpClient): HttpClient {
         val ADDRESS = "https://cas.iium.edu.my:8448/cas/login?service=https%3a%2f%2fimaluum.iium.edu.my%2fhome";
 
