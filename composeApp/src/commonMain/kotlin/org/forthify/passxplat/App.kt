@@ -1,6 +1,8 @@
 package org.forthify.passxplat
 
 import InfoScreen
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -86,6 +88,10 @@ val snackbarHostState = remember { SnackbarHostState() }
             NavHost(
                 navController = navController,
                 startDestination = "home",
+                enterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(500)) },
+                exitTransition = { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(500)) },
+                popEnterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.End, tween(500)) },
+                popExitTransition = { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.End, tween(500)) },
                 modifier = Modifier.
                 padding(paddingValues),
 
@@ -187,3 +193,4 @@ fun SettingsScreen() {
         Text("Settings Screen")
     }
 }
+

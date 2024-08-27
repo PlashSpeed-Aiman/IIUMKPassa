@@ -71,7 +71,6 @@ fun InfoScreen(snackbarHostState: SnackbarHostState) {
     val imaalumService : ImaalumService = getKoin().get()
     var sessionVal : String by remember { mutableStateOf("") }
     var semesterVal : String by remember { mutableStateOf("1") }
-    var expanded by remember { mutableStateOf(false) }
 
     Column (
         modifier = Modifier
@@ -238,6 +237,7 @@ fun InfoCard(
                 ) {
                     if (isLoading) {
                         CircularProgressIndicator(
+                            color = Color(0xFF00928F),
                             modifier = Modifier.size(24.dp),
                             strokeWidth = 2.dp
                         )
