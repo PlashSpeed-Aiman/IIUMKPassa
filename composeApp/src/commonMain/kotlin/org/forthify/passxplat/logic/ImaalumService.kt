@@ -1,15 +1,28 @@
 package org.forthify.passxplat.logic
+import arrow.core.Either
+import arrow.core.left
+import arrow.core.right
 
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.bodyAsChannel
 import io.ktor.client.statement.readBytes
+import io.ktor.utils.io.jvm.javaio.toInputStream
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.File
+
+sealed class DownloadError : Error() {
+    object LoginFailed : DownloadError()
+    data class HttpError(val statusCode: Int) : DownloadError()
+    data class UnknownError(val exception: Exception) : DownloadError()
+}
 
 interface FileSave {
 
-    fun SaveToFile(fileName: String, data: ByteArray)
-    fun SaveToFile(fileName: String, data: ByteArray, onComplete: (Boolean) -> Unit)
+    fun saveToFile(fileName: String, data: ByteArray)
+    fun saveToFile(fileName: String, data: ByteArray, onComplete: (Boolean) -> Unit)
 }
 
 interface FileView {
@@ -18,95 +31,60 @@ interface FileView {
 
 class ImaalumService(
     private val client: HttpClient,
-    val fileSave: FileSave,
+    private val fileSave: FileSave,
     private val loginService: LoginService
 ) {
-
-    // Method to download the course confirmation slip
-    suspend fun downloadCourseConfirmationSlip(sessionVal: String, semesterVal: String) {
-
-        try {
-            var imaalumClient = loginService.LoginToImaalum(client)
-            val url =
-                "https://imaluum.iium.edu.my/confirmationslip?ses=$sessionVal&sem=$semesterVal"
-            val response: HttpResponse = imaalumClient.get(url)
-
-            if (response.status.value == 200) {
-                val bodyBytes = response.readBytes()
-                fileSave.SaveToFile("CourseConfirmationSlip.html", bodyBytes)
-                println("Course Confirmation Slip download complete")
-            } else {
-                println("Failed to download Course Confirmation Slip: ${response.status.value}")
-            }
-        } catch (exp: Exception) {
-            exp.printStackTrace()
-        }
-
+    private enum class DocumentType(val fileName: String, val fileExtension: String, val url: String) {
+        COURSE_CONFIRMATION_SLIP("CourseConfirmationSlip", "html", "https://imaluum.iium.edu.my/confirmationslip"),
+        EXAM_SLIP("ExamSlip", "pdf", "https://imaluum.iium.edu.my/MyAcademic/course_timetable"),
+        RESULT("Result", "html", "https://imaluum.iium.edu.my/MyAcademic/resultprint"),
+        FINANCIAL_STATEMENT("Financial", "pdf", "https://imaluum.iium.edu.my/MyFinancial")
     }
 
-    // Method to download the exam slip
-    suspend fun downloadExamSlip() {
+    private suspend fun downloadDocument(
+        documentType: DocumentType,
+        sessionVal: String? = null,
+        semesterVal: String? = null
+    ): Either<Boolean, DownloadError> = withContext(Dispatchers.IO) {
         try {
-
-            var imaalumClient = loginService.LoginToImaalum(client)
-
-            val url =
-                "https://imaluum.iium.edu.my/MyAcademic/course_timetable" // Example URL, adjust accordingly
-            val response: HttpResponse = imaalumClient.get(url)
-
-            if (response.status.value == 200) {
-                val bodyBytes = response.readBytes()
-                fileSave.SaveToFile("ExamSlip.pdf", bodyBytes)
-                println("Exam Slip download complete")
-            } else {
-                println("Failed to download Exam Slip: ${response.status.value}")
+            val imaalumClient = loginService.LoginToImaalum(client)
+            val url = when {
+                sessionVal != null && semesterVal != null -> "${documentType.url}?ses=$sessionVal&sem=$semesterVal"
+                else -> documentType.url
             }
 
-        } catch (exp: Exception) {
-            exp.printStackTrace()
+            val response: HttpResponse = imaalumClient.get(url)
+
+            when (response.status.value) {
+                200 -> {
+                    val inputStream = response.bodyAsChannel().toInputStream()
+                    val fileName = "${documentType.fileName}.${documentType.fileExtension}"
+                    fileSave.saveToFile(fileName, inputStream.readAllBytes())
+                    println("${documentType.name} download complete")
+                    true.left()
+                }
+                else -> {
+                    println("Failed to download ${documentType.name}: HTTP ${response.status.value}")
+                    DownloadError.HttpError(response.status.value).right()
+                }
+            }
+        } catch (e: Exception) {
+            println("Error downloading ${documentType.name}: ${e.message}")
+            e.printStackTrace()
+            DownloadError.UnknownError(e).right()
         }
     }
 
-    // Method to download the result
-    suspend fun downloadResult(sessionVal: String, semesterVal: String) {
-        try {
-            var imaalumClient = loginService.LoginToImaalum(client)
+    suspend fun downloadCourseConfirmationSlip(sessionVal: String, semesterVal: String): Either<Boolean, Error> =
+        downloadDocument(DocumentType.COURSE_CONFIRMATION_SLIP, sessionVal, semesterVal)
 
-            val url =
-                "https://imaluum.iium.edu.my/MyAcademic/resultprint?ses=$sessionVal&sem=$semesterVal"
-            val response: HttpResponse = imaalumClient.get(url)
+    suspend fun downloadExamSlip(): Either<Boolean, Error> =
+        downloadDocument(DocumentType.EXAM_SLIP)
 
-            if (response.status.value == 200) {
-                val bodyBytes = response.readBytes()
-                fileSave.SaveToFile("Result.html", bodyBytes)
-                println("Result download complete")
-            } else {
-                println("Failed to download Result: ${response.status.value}")
-            }
-        } catch (exp: Exception) {
-            exp.printStackTrace()
-        }
-    }
+    suspend fun downloadResult(sessionVal: String, semesterVal: String): Either<Boolean, Error> =
+        downloadDocument(DocumentType.RESULT, sessionVal, semesterVal)
 
-
-    suspend fun downloadFinancialStatement(): Boolean {
-        try {
-            var imaalumClient = loginService.LoginToImaalum(client)
-            val url = "https://imaluum.iium.edu.my/MyFinancial"
-            val response: HttpResponse = imaalumClient.get(url)
-
-            if (response.status.value == 200) {
-                val bodyBytes = response.readBytes()
-                fileSave.SaveToFile("Financial.pdf", bodyBytes)
-                println("Result download complete")
-                return true
-            } else {
-                println("Failed to download Result: ${response.status.value}")
-            }
-        } catch (exp: Exception) {
-            exp.printStackTrace()
-        }
-        return false
-    }
+    suspend fun downloadFinancialStatement(): Either<Boolean, Error> =
+        downloadDocument(DocumentType.FINANCIAL_STATEMENT)
 }
 

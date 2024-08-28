@@ -11,7 +11,6 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import org.forthify.passxplat.KPassApplication
 import org.forthify.passxplat.MainActivity
 import java.io.File
 import java.io.FileOutputStream
@@ -22,7 +21,7 @@ class AndroidFileSave(
 ) : FileSave {
 
 
-    override fun SaveToFile(fileName: String, data: ByteArray) {
+    override fun saveToFile(fileName: String, data: ByteArray) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             saveFileApi29AndAbove(fileName, data)
         } else {
@@ -38,7 +37,7 @@ class AndroidFileSave(
         }
     }
 
-    override fun SaveToFile(fileName: String, data: ByteArray, onComplete: (Boolean) -> Unit) {
+    override fun saveToFile(fileName: String, data: ByteArray, onComplete: (Boolean) -> Unit) {
         return
     }
 

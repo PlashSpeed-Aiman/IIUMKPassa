@@ -119,8 +119,18 @@ fun DrawerContent(navController: NavHostController, drawerState: DrawerState, sc
             border(1.dp,Color(0xFF00928F),
                 shape = RoundedCornerShape(5.dp)
             ).fillMaxWidth().clickable {
-                navController.navigate("home")
-                scope.launch { drawerState.close() }
+                when(navController.currentDestination!!.route
+                ){
+                    "home" -> {
+                        scope.launch { drawerState.close() }
+
+                    }
+                    else->{
+                        navController.navigate("home")
+                        scope.launch { drawerState.close() }
+                    }
+                }
+
             }
         ) {
             Text(

@@ -36,6 +36,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import arrow.core.Either
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import org.forthify.passxplat.logic.ImaalumService
 import org.koin.java.KoinJavaComponent.getKoin
@@ -43,7 +45,7 @@ import org.koin.java.KoinJavaComponent.getKoin
 data class ImaalumInfo(
     val heading: String,
     val body: String,
-    val action: suspend () -> Unit  // Changed to suspend function
+    val action: suspend () -> Either<Boolean,Error>  // Changed to suspend function
 )
 
 fun CardData(imaalumService: ImaalumService, sessionVal: String, semesterVal: String): List<ImaalumInfo> {
@@ -69,7 +71,7 @@ fun CardData(imaalumService: ImaalumService, sessionVal: String, semesterVal: St
 @Composable
 fun InfoScreen(snackbarHostState: SnackbarHostState) {
     val imaalumService : ImaalumService = getKoin().get()
-    var sessionVal : String by remember { mutableStateOf("") }
+    var sessionVal : String by remember { mutableStateOf("2023/2024") }
     var semesterVal : String by remember { mutableStateOf("1") }
 
     Column (
@@ -156,7 +158,7 @@ fun InfoCard(
     body: String,
     backgroundColor: Color,
     snackbar: SnackbarHostState,
-    onClick: suspend () -> Unit
+    onClick: suspend () -> Either<Boolean,Error>
 ) {
     val coroutineScope = rememberCoroutineScope()
     var isLoading by remember { mutableStateOf(false) }
@@ -208,27 +210,30 @@ fun InfoCard(
                 }
                 IconButton(
                     onClick = {
-                        var job = coroutineScope.launch {
+                        coroutineScope.launch {
                             isLoading = true
                             try {
-                                onClick()
-
-
-                            } finally {
+                                val result = onClick()
                                 isLoading = false
-                            }
-                        }
-                        job.invokeOnCompletion {
-                            coroutineScope.launch {
-                                var res = snackbar.showSnackbar("Download Done","VIEW")
-                                when(res){
-                                    SnackbarResult.ActionPerformed -> {
-                                        /* Handle snackbar action performed */
+                                when (result) {
+                                    is Either.Left -> {
+                                        // Handle success case
+                                        val snackbarResult = snackbar.showSnackbar("Files have been downloaded to the Downloads folder", "DISMISS")
+                                        when (snackbarResult) {
+                                            SnackbarResult.ActionPerformed -> {
+                                                snackbar.currentSnackbarData?.dismiss()
+                                            }
+                                            SnackbarResult.Dismissed -> {
+                                                // Handle snackbar dismissed
+                                            }
+                                        }
                                     }
-                                    SnackbarResult.Dismissed -> {
-                                        /* Handle snackbar dismissed */
+                                    is Either.Right -> {
+                                        // Handle error case
+                                        snackbar.showSnackbar("Error: ${result.value.message}")
                                     }
                                 }
+                            } finally {
                             }
                         }
                         }
