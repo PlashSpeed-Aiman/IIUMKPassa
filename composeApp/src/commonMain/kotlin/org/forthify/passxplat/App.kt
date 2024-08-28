@@ -190,7 +190,7 @@ fun SettingsScreen() {
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        Text("Settings Screen")
+        Text("Work in Progress")
     }
 }
 
