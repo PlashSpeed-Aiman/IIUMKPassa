@@ -89,7 +89,7 @@ class ImaalumService(
     }
 
 
-    suspend fun downloadFinancialStatement() {
+    suspend fun downloadFinancialStatement(): Boolean {
         try {
             var imaalumClient = loginService.LoginToImaalum(client)
             val url = "https://imaluum.iium.edu.my/MyFinancial"
@@ -99,12 +99,14 @@ class ImaalumService(
                 val bodyBytes = response.readBytes()
                 fileSave.SaveToFile("Financial.pdf", bodyBytes)
                 println("Result download complete")
+                return true
             } else {
                 println("Failed to download Result: ${response.status.value}")
             }
         } catch (exp: Exception) {
             exp.printStackTrace()
         }
+        return false
     }
 }
 

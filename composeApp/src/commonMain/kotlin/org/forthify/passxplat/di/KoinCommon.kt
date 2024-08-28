@@ -13,7 +13,7 @@ val commonModule = module {
     single {
         HttpClient(OkHttp) {
             install(HttpTimeout) {
-                requestTimeoutMillis = 10000
+                requestTimeoutMillis = 15000
             }
             install(HttpCookies){
                 storage = AcceptAllCookiesStorage()

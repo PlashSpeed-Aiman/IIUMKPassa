@@ -42,6 +42,8 @@ kotlin {
         }
         commonMain.dependencies {
             implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.1")
+            implementation(libs.arrow.core)
+            implementation(libs.arrow.fx.coroutines)
 
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.okhttp)
