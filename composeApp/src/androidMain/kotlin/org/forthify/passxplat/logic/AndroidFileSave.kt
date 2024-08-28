@@ -1,6 +1,7 @@
 package org.forthify.passxplat.logic
 
 import android.Manifest
+import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
 import android.content.pm.PackageManager
@@ -53,21 +54,47 @@ class AndroidFileSave(
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
-    private fun saveFileApi29AndAbove(fileName: String, data: ByteArray) {
+    private fun saveFileApi29AndAbove( fileName: String, data: ByteArray) {
+        val resolver = context.contentResolver
+
+        // Check if the file already exists
+        val existingFileUri = resolver.query(
+            MediaStore.Downloads.EXTERNAL_CONTENT_URI,
+            arrayOf(MediaStore.Downloads._ID),
+            "${MediaStore.Downloads.DISPLAY_NAME} = ?",
+            arrayOf(fileName),
+            null
+        )?.use { cursor ->
+            if (cursor.moveToFirst()) {
+                val id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Downloads._ID))
+                ContentUris.withAppendedId(MediaStore.Downloads.EXTERNAL_CONTENT_URI, id)
+            } else {
+                null
+            }
+        }
+
+        // If file exists, delete it
+        existingFileUri?.let {
+            resolver.delete(it, null, null)
+        }
+
+        // Prepare new file content values
         val contentValues = ContentValues().apply {
             put(MediaStore.Downloads.DISPLAY_NAME, fileName)
             put(MediaStore.Downloads.MIME_TYPE, "application/octet-stream")
             put(MediaStore.Downloads.IS_PENDING, 1)
         }
 
-        val resolver = context.contentResolver
+        // Insert the new file
         val uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
 
         uri?.let {
             try {
+                // Write data to the new file
                 resolver.openOutputStream(it)?.use { outputStream ->
                     outputStream.write(data)
                 }
+                // Mark the file as no longer pending
                 contentValues.clear()
                 contentValues.put(MediaStore.Downloads.IS_PENDING, 0)
                 resolver.update(it, contentValues, null, null)

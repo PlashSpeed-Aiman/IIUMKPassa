@@ -38,6 +38,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import org.forthify.passxplat.components.DrawerContent
+import org.forthify.passxplat.screens.AboutScreen
+import org.forthify.passxplat.screens.SettingsScreen
 import org.forthify.passxplat.ui.NavShape
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -99,108 +102,118 @@ val snackbarHostState = remember { SnackbarHostState() }
                 composable("home") { org.forthify.passxplat.screens.HomeScreen(snackbarHostState) }
                 composable("profile") { InfoScreen(snackbarHostState) }
                 composable("settings") { SettingsScreen() }
+                composable("about"){ AboutScreen() }
             }
         }
     }
 }
-@Preview
-@Composable
-fun DrawerContent(navController: NavHostController, drawerState: DrawerState, scope: CoroutineScope) {
-    Column (
-        modifier = Modifier.background(shape = RoundedCornerShape(10.dp), color = Color.White)
-    ){
-        Box(
-            modifier = Modifier.height(100.dp).fillMaxWidth().background(
-                color = Color(0xFF00928F)
-            )
-        )
-        Box(
-            modifier = Modifier.padding(5.dp).
-            border(1.dp,Color(0xFF00928F),
-                shape = RoundedCornerShape(5.dp)
-            ).fillMaxWidth().clickable {
-                when(navController.currentDestination!!.route
-                ){
-                    "home" -> {
-                        scope.launch { drawerState.close() }
+//@Preview
+//@Composable
+//fun DrawerContent(navController: NavHostController, drawerState: DrawerState, scope: CoroutineScope) {
+//    Column (
+//        modifier = Modifier.background(shape = RoundedCornerShape(10.dp), color = Color.White)
+//    ){
+//        Box(
+//            modifier = Modifier.height(100.dp).fillMaxWidth().background(
+//                color = Color(0xFF00928F)
+//            )
+//        )
+//        Box(
+//            modifier = Modifier.padding(5.dp).
+//            border(1.dp,Color(0xFF00928F),
+//                shape = RoundedCornerShape(5.dp)
+//            ).fillMaxWidth().clickable {
+//                when(navController.currentDestination!!.route
+//                ){
+//                    "home" -> {
+//                        scope.launch { drawerState.close() }
+//
+//                    }
+//                    else->{
+//                        navController.navigate("home")
+//                        scope.launch { drawerState.close() }
+//                    }
+//                }
+//
+//            }
+//        ) {
+//            Text(
+//                style = MaterialTheme.typography.subtitle1// Adjust font size as needed
+//,
+//                        color = Color(0xFFD59F0F),
+//
+//                text = "Home",
+//                modifier = Modifier
+//                    .padding(12.dp),
+//
+//            )
+//        }
+//        Box(
+//            modifier = Modifier.padding(5.dp).
+//            border(1.dp,Color(0xFF00928F),
+//                shape = RoundedCornerShape(5.dp)
+//            )
+//                .fillMaxWidth().clickable {
+//                    when(navController.currentDestination!!.route){
+//                        "home" -> {
+//                            scope.launch { drawerState.close() }
+//
+//                        }
+//                        else ->{
+//                            navController.navigate("home")
+//                            scope.launch { drawerState.close() }
+//
+//                        }
+//                    }
+//            }
+//        ) {
+//            Text(
+//                style = MaterialTheme.typography.subtitle1// Adjust font size as needed
+//,
+//                        color = Color(0xFFD59F0F),
+//                text = "Profile",
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .clickable {
+//                        navController.navigate("profile")
+//                        scope.launch { drawerState.close() }
+//
+//                    }
+//                    .padding(12.dp)
+//            )
+//        }
+//        Box(
+//            modifier = Modifier.padding(5.dp). border(1.dp,Color(0xFF00928F),
+//                shape = RoundedCornerShape(5.dp)
+//            ).fillMaxWidth().clickable {
+//                navController.navigate("home")
+//                scope.launch { drawerState.close() }
+//            }
+//        ) {
+//            Text(
+//                style = MaterialTheme.typography.subtitle1// Adjust font size as needed
+//                ,
+//                color = Color(0xFFD59F0F),
+//                text = "Settings",
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .clickable {
+//                        navController.navigate("settings")
+//                        scope.launch { drawerState.close() }
+//                    }
+//                    .padding(12.dp)
+//            )
+//        }
+//    }
+//}
 
-                    }
-                    else->{
-                        navController.navigate("home")
-                        scope.launch { drawerState.close() }
-                    }
-                }
-
-            }
-        ) {
-            Text(
-                style = MaterialTheme.typography.subtitle1// Adjust font size as needed
-,
-                        color = Color(0xFFD59F0F),
-
-                text = "Home",
-                modifier = Modifier
-                    .padding(12.dp),
-
-            )
-        }
-        Box(
-            modifier = Modifier.padding(5.dp).
-            border(1.dp,Color(0xFF00928F),
-                shape = RoundedCornerShape(5.dp)
-            )
-                .fillMaxWidth().clickable {
-                navController.navigate("home")
-                scope.launch { drawerState.close() }
-            }
-        ) {
-            Text(
-                style = MaterialTheme.typography.subtitle1// Adjust font size as needed
-,
-                        color = Color(0xFFD59F0F),
-                text = "Profile",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        navController.navigate("profile")
-                        scope.launch { drawerState.close() }
-
-                    }
-                    .padding(12.dp)
-            )
-        }
-        Box(
-            modifier = Modifier.padding(5.dp). border(1.dp,Color(0xFF00928F),
-                shape = RoundedCornerShape(5.dp)
-            ).fillMaxWidth().clickable {
-                navController.navigate("home")
-                scope.launch { drawerState.close() }
-            }
-        ) {
-            Text(
-                style = MaterialTheme.typography.subtitle1// Adjust font size as needed
-                ,
-                color = Color(0xFFD59F0F),
-                text = "Settings",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        navController.navigate("settings")
-                        scope.launch { drawerState.close() }
-                    }
-                    .padding(12.dp)
-            )
-        }
-    }
-}
-
-@Composable
-fun SettingsScreen() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text("Work in Progress")
-    }
-}
-
+//@Composable
+//fun SettingsScreen() {
+//    Box(
+//        modifier = Modifier.fillMaxSize(),
+//        contentAlignment = Alignment.Center
+//    ) {
+//        Text("Work in Progress")
+//    }
+//}
+//

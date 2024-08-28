@@ -23,6 +23,7 @@ interface FileSave {
 
     fun saveToFile(fileName: String, data: ByteArray)
     fun saveToFile(fileName: String, data: ByteArray, onComplete: (Boolean) -> Unit)
+
 }
 
 interface FileView {
@@ -45,33 +46,39 @@ class ImaalumService(
         documentType: DocumentType,
         sessionVal: String? = null,
         semesterVal: String? = null
-    ): Either<Boolean, DownloadError> = withContext(Dispatchers.IO) {
+    ): Either<Boolean, Error> = withContext(Dispatchers.IO) {
         try {
-            val imaalumClient = loginService.LoginToImaalum(client)
+            val imaalumClientResult = loginService.loginToImaalum(client)
             val url = when {
                 sessionVal != null && semesterVal != null -> "${documentType.url}?ses=$sessionVal&sem=$semesterVal"
                 else -> documentType.url
             }
-
-            val response: HttpResponse = imaalumClient.get(url)
-
-            when (response.status.value) {
-                200 -> {
-                    val inputStream = response.bodyAsChannel().toInputStream()
-                    val fileName = "${documentType.fileName}.${documentType.fileExtension}"
-                    fileSave.saveToFile(fileName, inputStream.readAllBytes())
-                    println("${documentType.name} download complete")
-                    true.left()
+            when(imaalumClientResult){
+                is Either.Left -> {
+                    val response: HttpResponse = imaalumClientResult.value.get(url)
+                    when (response.status.value) {
+                        200 -> {
+                            val bytes = response.readBytes()
+                            val fileName = "${documentType.fileName}.${documentType.fileExtension}"
+                            fileSave.saveToFile(fileName, bytes)
+                            println("${documentType.name} download complete")
+                            true.left()
+                        }
+                        else -> {
+                            println("Failed to download ${documentType.name}: HTTP ${response.status.value}")
+                            Error("Failed to download ${documentType.name}: HTTP ${response.status.value}").right()
+                        }
+                    }
                 }
-                else -> {
-                    println("Failed to download ${documentType.name}: HTTP ${response.status.value}")
-                    DownloadError.HttpError(response.status.value).right()
-                }
+                is Either.Right -> Error(imaalumClientResult.value.message).right()
             }
+
+
+
         } catch (e: Exception) {
             println("Error downloading ${documentType.name}: ${e.message}")
             e.printStackTrace()
-            DownloadError.UnknownError(e).right()
+            Error("Error downloading ${documentType.name}: ${e.message}").right()
         }
     }
 

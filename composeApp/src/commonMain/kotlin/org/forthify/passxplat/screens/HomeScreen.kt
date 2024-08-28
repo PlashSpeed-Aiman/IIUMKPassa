@@ -25,14 +25,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import arrow.core.Either
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -44,6 +47,7 @@ import org.koin.java.KoinJavaComponent.getKoin
 
 @Composable
 fun HomeScreen(snackbarHostState: SnackbarHostState) {
+    val coroutineScope = rememberCoroutineScope()
     val loginService: LoginService = getKoin().get()
     val credStore: CredentialStorage = getKoin().get()
     Box(
@@ -61,7 +65,7 @@ fun HomeScreen(snackbarHostState: SnackbarHostState) {
                 modifier = Modifier.height(25.dp)
             )
             LoginForm( credStore, snackbarHostState)
-            LoginButton(loginService, snackbarHostState)
+            LoginButton(loginService, snackbarHostState,coroutineScope)
         }
     }
 }
@@ -187,29 +191,31 @@ fun LoginForm(
 fun HomeScreenInfo(){
     Column {
         Text(
-           style = MaterialTheme.typography.h5,
+            style = MaterialTheme.typography.h4,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(bottom = 16.dp),
             text = "Home",
             )
-        Spacer(
-            modifier = Modifier.height(10.dp)
-        )
-        Text(text = "Easily login to campus wifi by setting up your credentials once, and press login")
     }
 }
 @Composable
-fun LoginButton(loginService: LoginService, snackbarHostState: SnackbarHostState) {
+fun LoginButton(
+    loginService: LoginService,
+    snackbarHostState: SnackbarHostState,
+    coroutineScope: CoroutineScope
+) {
     var isLoading by remember { mutableStateOf(false) }
     Button(
         onClick = {
-            CoroutineScope(Dispatchers.IO).launch {
+            coroutineScope.launch {
+                isLoading = true
                 delay(500)
-                loginService.LoginToWifi()
+                var res = loginService.loginToWifi()
                 isLoading = false
-            }
-            CoroutineScope(Dispatchers.Main).launch {
-                snackbarHostState.showSnackbar(
-                    message = "Connection Successful! But do check by searching something on the Internet"
-                )
+                when (res ){
+                    is Either.Left -> snackbarHostState.showSnackbar("Wifi Connected")
+                    is Either.Right -> snackbarHostState.showSnackbar(res.value.message ?: "Null Error")
+                }
             }
 
 

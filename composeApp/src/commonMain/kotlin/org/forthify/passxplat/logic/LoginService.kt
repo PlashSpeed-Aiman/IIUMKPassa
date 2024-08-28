@@ -1,72 +1,84 @@
 package org.forthify.passxplat.logic
 
+import arrow.core.Either
+import arrow.core.left
+import arrow.core.right
 import io.ktor.client.HttpClient
 import io.ktor.client.request.forms.submitForm
+import io.ktor.client.request.get
 import io.ktor.client.request.post
-import io.ktor.client.request.request
 import io.ktor.client.request.setBody
-import io.ktor.client.statement.HttpResponse
-import io.ktor.client.utils.EmptyContent.contentType
 import io.ktor.http.ContentType
-import io.ktor.http.HttpMethod
 import io.ktor.http.Parameters
 import io.ktor.http.contentType
 import io.ktor.http.formUrlEncode
+import io.ktor.http.isSuccess
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.forthify.passxplat.model.StudentCredentials
 
-class LoginService(private val httpClient: HttpClient,private val credentialStorage: CredentialStorage){
-
-    companion object{
-        const val ADDRESS = "https://captiveportalmahallahgombak.iium.edu.my/cgi-bin/login"
+class LoginService(
+    private val httpClient: HttpClient,
+    private val credentialStorage: CredentialStorage
+) {
+    companion object {
+        private const val WIFI_LOGIN_URL = "https://captiveportalmahallahgombak.iium.edu.my/cgi-bin/login"
+        private const val IMAALUM_LOGIN_URL = "https://cas.iium.edu.my:8448/cas/login?service=https%3a%2f%2fimaluum.iium.edu.my%2fhome"
     }
 
-
-    private fun imaalumCreds(studentCredentials: StudentCredentials): Parameters{
-
-// Assuming decodeUser and decodePass are already decoded as strings
-        val formData = Parameters.build {
-            append("username", studentCredentials.matricNumber)
-            append("password", studentCredentials.password)
-            append("execution", "e1s1")
-            append("_eventId", "submit")
-            append("geolocation", "")
-        }
-        return formData
+    private fun createWifiLoginForm(credentials: StudentCredentials): Parameters = Parameters.build {
+        append("user", credentials.matricNumber)
+        append("password", credentials.password)
+        append("url", "http://www.iium.edu.my/")
+        append("cmd", "authenticate")
+        append("Login", "Log In")
     }
-    private fun createForm(studentCredentials: StudentCredentials) : Parameters{
 
-        val formVal = Parameters.build {
-            append("user", studentCredentials.matricNumber)
-            append("password", studentCredentials.password)
-            append("url", "http://www.iium.edu.my/")
-            append("cmd", "authenticate")
-            append("Login", "Log In")
-        }
-        return formVal;
+    private fun createImaalumLoginForm(credentials: StudentCredentials): Parameters = Parameters.build {
+        append("username", credentials.matricNumber)
+        append("password", credentials.password)
+        append("execution", "e1s1")
+        append("_eventId", "submit")
+        append("geolocation", "")
     }
-    suspend fun LoginToWifi(){
-        val creds = credentialStorage.load()
-        val form = createForm(creds)
+
+    suspend fun loginToWifi(): Either<Boolean, Error> = withContext(Dispatchers.IO) {
         try {
-            httpClient.post(ADDRESS) {
+            val credentials = credentialStorage.load()
+            val form = createWifiLoginForm(credentials)
+            val response = httpClient.post(WIFI_LOGIN_URL) {
                 contentType(ContentType.Application.FormUrlEncoded)
                 setBody(form.formUrlEncode())
             }
-        }catch (e:Exception){
-            e.printStackTrace()
+            println("Login to Wifi")
+            when {
+                response.status.isSuccess() -> true.left()
+                else -> Error("Login failed with status: ${response.status}").right()
+            }
+        } catch (e: Exception) {
+            Error(e).right()
         }
-
-    }
-    // THIS GETS THE NECESSARY COOKIES TO ALLOW IMAALUM TO BE USED
-    suspend fun LoginToImaalum(httpClient: HttpClient): HttpClient {
-        val ADDRESS = "https://cas.iium.edu.my:8448/cas/login?service=https%3a%2f%2fimaluum.iium.edu.my%2fhome";
-
-        val first_response: HttpResponse = httpClient.request(ADDRESS){
-            method = HttpMethod.Get
-        }
-        val second_response: HttpResponse = httpClient.submitForm(ADDRESS, imaalumCreds(studentCredentials = credentialStorage.load()))
-        return httpClient
     }
 
+    suspend fun loginToImaalum(client: HttpClient): Either<HttpClient, Error> = withContext(Dispatchers.IO) {
+        try {
+            val credentials = credentialStorage.load()
 
+            // First request to get necessary cookies
+            client.get(IMAALUM_LOGIN_URL)
+
+            // Second request to submit the login form
+            val loginResponse = client.submitForm(
+                url = IMAALUM_LOGIN_URL,
+                formParameters = createImaalumLoginForm(credentials)
+            )
+
+
+            println("Imaalum login failed with status: ${loginResponse.status}")
+            client.left()
+
+        } catch (e: Exception) {
+            Error(e).right()
+        }
+    }
 }
