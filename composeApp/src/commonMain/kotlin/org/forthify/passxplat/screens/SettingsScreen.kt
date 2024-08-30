@@ -81,11 +81,6 @@ fun SettingsScreen(settingsService: SettingsService) {
             onCheckedChange = { darkModeEnabled = it }
         )
 
-        SettingItem(
-            title = "Auto-Save",
-            checked = autoSaveEnabled,
-            onCheckedChange = { autoSaveEnabled = it }
-        )
 
         Spacer(modifier = Modifier.height(24.dp))
         Text(text = "Folder Directory",style = MaterialTheme.typography.body1)
@@ -124,13 +119,15 @@ fun SettingItem(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(text = title, style = MaterialTheme.typography.body1)
-        Switch(
-            checked = checked,
-            onCheckedChange = onCheckedChange,
-            colors = SwitchDefaults.colors(
-                checkedThumbColor = primaryColor
-            )
-        )
+        Text(text = "COMING SOON", fontStyle = FontStyle.Italic, style = MaterialTheme.typography.body2)
+
+//        Switch(
+//            checked = checked,
+//            onCheckedChange = onCheckedChange,
+//            colors = SwitchDefaults.colors(
+//                checkedThumbColor = primaryColor
+//            )
+//        )
     }
 }
 
