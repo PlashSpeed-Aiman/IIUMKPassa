@@ -82,8 +82,8 @@ fun CardData(imaalumService: ImaalumService, sessionVal: String, semesterVal: St
 }
 
 @Composable
-fun InfoScreen(snackbarHostState: SnackbarHostState) {
-    val imaalumService : ImaalumService = getKoin().get()
+fun InfoScreen(imaalumService: ImaalumService,snackbarHostState: SnackbarHostState) {
+
     var sessionVal : String by remember { mutableStateOf("2023/2024") }
     var semesterVal : String by remember { mutableStateOf("1") }
     val primaryColor = Color(0xFF00928F)

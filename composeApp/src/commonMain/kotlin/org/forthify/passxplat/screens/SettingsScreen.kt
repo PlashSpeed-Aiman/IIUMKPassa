@@ -21,6 +21,7 @@ import androidx.compose.material.Switch
 import androidx.compose.material.SwitchDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,17 +39,22 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import org.forthify.passxplat.logic.SettingsService
 import javax.swing.JFileChooser
 
 
 val primaryColor = Color(0xFF00928F)
 
 @Composable
-fun SettingsScreen() {
+fun SettingsScreen(settingsService: SettingsService) {
     var notificationsEnabled by remember { mutableStateOf(true) }
     var darkModeEnabled by remember { mutableStateOf(false) }
     var autoSaveEnabled by remember { mutableStateOf(true) }
     var selectedFolder by remember { mutableStateOf("") }
+
+    LaunchedEffect(selectedFolder){
+        selectedFolder = settingsService.loadLocation()
+    }
 
     Column(
         modifier = Modifier
@@ -86,7 +92,9 @@ fun SettingsScreen() {
         Spacer(modifier = Modifier.height(8.dp))
         when(isJvm()){
             true -> FolderSelector(selectedFolder = selectedFolder,
-                onFolderSelected = { selectedFolder = it },
+                onFolderSelected = { selectedFolder = it
+                                   settingsService.saveToLocation(selectedFolder)
+                                   },
                 true
             )
             else -> Text(

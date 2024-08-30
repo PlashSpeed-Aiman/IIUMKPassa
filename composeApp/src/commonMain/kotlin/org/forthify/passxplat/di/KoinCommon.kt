@@ -7,6 +7,7 @@ import io.ktor.client.plugins.cookies.AcceptAllCookiesStorage
 import io.ktor.client.plugins.cookies.HttpCookies
 import org.forthify.passxplat.logic.ImaalumService
 import org.forthify.passxplat.logic.LoginService
+import org.forthify.passxplat.logic.SettingsService
 import org.koin.dsl.module
 
 val commonModule = module {
@@ -22,6 +23,9 @@ val commonModule = module {
 
     }
 }
+    single {
+        SettingsService(get())
+    }
 
     single{
         ImaalumService(get(), get(),get())
@@ -30,5 +34,7 @@ val commonModule = module {
     single{
         LoginService(get(),get())
     }
+
+
 
 }

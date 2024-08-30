@@ -43,6 +43,7 @@ import org.forthify.passxplat.screens.AboutScreen
 import org.forthify.passxplat.screens.SettingsScreen
 import org.forthify.passxplat.ui.NavShape
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.java.KoinJavaComponent.getKoin
 
 @Composable
 @Preview
@@ -100,8 +101,8 @@ val snackbarHostState = remember { SnackbarHostState() }
 
             ) {
                 composable("home") { org.forthify.passxplat.screens.HomeScreen(snackbarHostState) }
-                composable("profile") { InfoScreen(snackbarHostState) }
-                composable("settings") { SettingsScreen() }
+                composable("profile") { InfoScreen(getKoin().get(),snackbarHostState) }
+                composable("settings") { SettingsScreen(getKoin().get())}
                 composable("about"){ AboutScreen() }
             }
         }
