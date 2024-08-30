@@ -188,19 +188,6 @@ fun FolderSelector(
             ) {
                 Text("Reset")
             }
-            Spacer(modifier = Modifier.width(8.dp))
-            Button(
-                colors = customButtonColors,
-                enabled = enabled,
-                onClick = {
-                    val folder = selectFolder()
-                    if (folder != null) {
-                        onFolderSelected(folder)
-                    }
-                },
-            ) {
-                Text("Save")
-            }
         }
     }
 }
