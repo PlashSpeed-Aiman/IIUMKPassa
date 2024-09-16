@@ -17,10 +17,15 @@ import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -140,7 +145,17 @@ fun LoginForm(
                         .fillMaxWidth()
                         .background(Color.White, shape = RoundedCornerShape(2.dp)),
                     singleLine = true,
-                    visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation()
+                    visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                    trailingIcon = {
+                        val image = if (isPasswordVisible)
+                            Icons.Filled.Done
+                        else Icons.Filled.Info
+                        val description = if (isPasswordVisible) "Hide password" else "Show password"
+
+                        IconButton(onClick = {isPasswordVisible = !isPasswordVisible}){
+                            Icon(imageVector  = image, description)
+                    }
+                    }
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -150,7 +165,7 @@ fun LoginForm(
                         isLoading = true
                         CoroutineScope(Dispatchers.IO).launch {
                             delay(500)
-                            credStore.save(StudentCredentials(username, password))
+                            credStore.save(StudentCredentials(username.trim(), password.trim()))
                             isLoading = false
                         }
                         CoroutineScope(Dispatchers.Main).launch {
